@@ -13,7 +13,7 @@ class ContainerTest {
     /**
      * Контейнер
      */
-    Container container;
+    private Container container;
 
     /**
      * Инициализация контейнера перед каждым тестом
@@ -31,24 +31,39 @@ class ContainerTest {
         Item item = new Item(12L);
 
         assertEquals(0, container.size());
-        assertFalse(container.contains(item));
         assertTrue(container.add(item));
         assertEquals(1, container.size());
         assertTrue(container.contains(item));
     }
 
     /**
-     * Тест на удаление элемента из контейнера
+     * Тест на удаление существующего элемента из контейнера
      */
     @Test
-    void remove() {
+    void removeWithExistItem() {
         Item item = new Item(12L);
 
         container.add(item);
         assertEquals(1, container.size());
         assertTrue(container.remove(item));
+        assertFalse(container.remove(item));
         assertFalse(container.contains(item));
         assertEquals(0, container.size());
-        assertFalse(container.remove(new Item(13L)));
+    }
+
+    /**
+     * Тест на удаление не существующего в контейнере элемента
+     */
+    @Test
+    void removeWithoutExistItem() {
+        Item item1 = new Item(12L);
+        Item item2 = new Item(13L);
+
+        container.add(item1);
+
+        assertFalse(container.contains(item2));
+        assertEquals(1, container.size());
+        assertFalse(container.remove(item2));
+        assertEquals(1, container.size());
     }
 }

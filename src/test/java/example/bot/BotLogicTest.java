@@ -13,17 +13,17 @@ class BotLogicTest {
     /**
      * Фейковый бот
      */
-    FakeBot bot;
+    private FakeBot bot;
 
     /**
      * Пользователь
      */
-    User user;
+    private User user;
 
     /**
      * Логика бота
      */
-    BotLogic logic;
+    private BotLogic logic;
 
     /**
      * Инициализация объектов перед каждым тестом
@@ -98,23 +98,38 @@ class BotLogicTest {
         logic.processCommand(user, "1");
         assertEquals(3, bot.getMessagesCount());
         assertEquals("Напоминание установлено", bot.getLastMessage());
-        Thread.sleep(1015);
+        Thread.sleep(950);
+        assertEquals(3, bot.getMessagesCount());
+        Thread.sleep(65);
         assertEquals(4, bot.getMessagesCount());
         assertEquals("Сработало напоминание: '" + textNotification + "'", bot.getLastMessage());
     }
 
     /**
-     * Проверка команды /notify при некорректном вводе времени
+     * Проверка команды /notify при вводе не целого числа
      */
     @Test
-    void testCommandNotifyWithIncorrectInput() {
+    void testCommandNotifyWithFractionalNumber() {
         logic.processCommand(user, "/notify");
         logic.processCommand(user, "Example");
 
         logic.processCommand(user, "0.1");
         assertEquals(3, bot.getMessagesCount());
         assertEquals("Пожалуйста, введите целое число", bot.getLastMessage());
-        assertThrows(IllegalArgumentException.class, () -> logic.processCommand(user, "-1"));
+    }
+
+    /**
+     * Проверка команды /notify при вводе отрицательного числа
+     */
+    @Test
+    void testCommandNotifyWithNegativeNumber() {
+        logic.processCommand(user, "/notify");
+        logic.processCommand(user, "Example");
+
+        logic.processCommand(user, "0.1");
+        Exception exception = assertThrows(IllegalArgumentException.class,
+                () -> logic.processCommand(user, "-1"));
+        assertEquals("Negative delay.", exception.getMessage());
     }
 
     /**
@@ -140,6 +155,10 @@ class BotLogicTest {
         assertEquals(10, bot.getMessagesCount());
         assertEquals(correctAnswer, bot.getPenultimateMessage());
         assertEquals("Тест завершен", bot.getLastMessage());
+
+        logic.processCommand(user, "/repeat");
+        assertEquals(11, bot.getMessagesCount());
+        assertEquals("Нет вопросов для повторения", bot.getLastMessage());
     }
 
     /**

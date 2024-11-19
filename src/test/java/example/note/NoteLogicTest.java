@@ -13,7 +13,7 @@ class NoteLogicTest {
     /**
      * Логика работы с заметками
      */
-    NoteLogic logic;
+    private NoteLogic logic;
 
     /**
      * Инициализация тестируемого объекта перед каждым тестом
